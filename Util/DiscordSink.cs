@@ -23,7 +23,7 @@ namespace Tofu.Util
             t.AutoReset = true;
             t.Elapsed += async (s, e) => {
                 if(!string.IsNullOrWhiteSpace(logBuffer) && Global.logChannel != null) {
-                    await Global.logChannel.SendMessageAsync(logBuffer);
+                    await Global.logChannel.SendMessageAsync($"```\n{logBuffer}\n```");
                     logBuffer = "";
                 }
             };
