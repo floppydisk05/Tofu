@@ -28,7 +28,7 @@ namespace Tofu
 {
     class Bot
     {
-        public const string VERSION = "4.0.4";
+        public const string VERSION = "4.0.5";
 
         public static void Main(string[] args) => new Bot().RunBot().GetAwaiter().GetResult();
 
