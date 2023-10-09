@@ -1,0 +1,62 @@
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+
+using DSharpPlus;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
+
+using static Tofu.Util.ResourceManager;
+using Newtonsoft.Json;
+using Tofu.Commands.Attributes;
+
+namespace Tofu.Commands.Staff
+{
+    public class BlacklistCommand : BaseCommandModule
+    {
+        [Command("blacklist")]
+        [Description("Toggle blacklist on a user to prevent them from using the bot")]
+        [Usage("[user]")]
+        [Category(Category.Staff)]
+        public async Task Blacklist(CommandContext Context, DiscordUser user = null)
+        {
+            if(!PermissionMethods.HasPermission(Context.Member.PermissionsIn(Context.Channel), Permissions.KickMembers) && Context.Member.Id != Bot.client.CurrentApplication.Owners.FirstOrDefault().Id)
+                throw new System.Exception("You no have permission smfh");
+
+            // This is a clunky method of listing things but it works
+            if(user == null) {
+                string list = "";
+                foreach(ulong blacklistuser in Global.blacklistedUsers) {
+                    string username = $"{blacklistuser}";
+                    try {
+                    if(Bot.client.GetUserAsync(blacklistuser).Result != null)
+                        username = Bot.client.GetUserAsync(blacklistuser).Result.Username;
+                    } catch{}
+                    list += username + "\n";
+                }
+                if(Global.blacklistedUsers.Count <= 0)
+                    list = "There are no blacklisted users.";
+
+                DiscordEmbedBuilder eb = new DiscordEmbedBuilder();
+                eb.WithTitle("Blacklist");
+                eb.WithColor(DiscordColor.Gold);
+                eb.WithDescription($"```\n{list}```");
+                await Context.ReplyAsync("", eb.Build());
+                return;
+            }
+
+            // Blacklist/unblacklist
+            if(Global.blacklistedUsers.Contains(user.Id)) {
+                Global.blacklistedUsers.Remove(user.Id);
+                File.WriteAllText(GetResourcePath("blacklist", Util.ResourceType.JsonData), JsonConvert.SerializeObject(Global.blacklistedUsers, Formatting.Indented));
+                await Context.ReplyAsync($"Unblacklisted {user.Username}#{user.Discriminator}!");
+            }
+            else {
+                Global.blacklistedUsers.Add(user.Id);
+                File.WriteAllText(GetResourcePath("blacklist", Util.ResourceType.JsonData), JsonConvert.SerializeObject(Global.blacklistedUsers, Formatting.Indented));
+                await Context.ReplyAsync($"Blacklisted {user.Username}#{user.Discriminator}!");
+            }
+        }
+    }
+}
