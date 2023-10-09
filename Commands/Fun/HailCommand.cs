@@ -1,4 +1,3 @@
-#if TOFU
 using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -6,9 +5,9 @@ using System.Collections.Generic;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 
-using WinBot.Commands.Attributes;
+using Tofu.Commands.Attributes;
 
-namespace WinBot.Commands.Fun.Tofu
+namespace Tofu.Commands.Fun
 {
     public class HailCommand : BaseCommandModule
     {
@@ -28,4 +27,3 @@ namespace WinBot.Commands.Fun.Tofu
         };
     }
 }
-#endif
